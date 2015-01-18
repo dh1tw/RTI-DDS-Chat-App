@@ -1,11 +1,16 @@
-#include "mylistener.h"
+#include "commslistener.h"
 #include <QDebug>
 #include <QString>
 #include <QTimer>
 
 DDS_Boolean shutdown_flag = DDS_BOOLEAN_FALSE;
 
-void MyListener::on_data_available(DDSDataReader *reader) {
+CommsListener::CommsListener(QObject *parent) : QObject(parent){
+    qDebug() << "Listener build";
+}
+
+
+void CommsListener::on_data_available(DDSDataReader *reader) {
     DDSStringDataReader * string_reader = NULL;
     char                  sample[MAX_STRING_SIZE];
     DDS_SampleInfo        info;
@@ -20,10 +25,6 @@ void MyListener::on_data_available(DDSDataReader *reader) {
         qDebug() << "DDSStringDataReader::narrow failed.";
         return;
     }
-
-//    QTimer *timer = new QTimer(this);
-//        connect(timer, SIGNAL(timeout()), this, SLOT(gotNewData));
-//        timer->start(1000);
 
     /* Loop until there are messages available in the queue */
     char *ptr_sample = &sample[0];
@@ -41,9 +42,7 @@ void MyListener::on_data_available(DDSDataReader *reader) {
         if (info.valid_data) {
             // Valid (this isn't just a lifecycle sample): print it
 
-            writeMe(sample);
-            emit gotNewData();
-            qDebug() << rxQueue;
+            emit newData(sample);
 
             if(strlen(sample) == 0){
                 shutdown_flag = DDS_BOOLEAN_TRUE;
@@ -51,13 +50,4 @@ void MyListener::on_data_available(DDSDataReader *reader) {
 
         }
     }
-}
-
-QString MyListener::rcvData(){
-    return rxQueue;
-
-}
-
-void MyListener::writeMe(QString data){
-    rxQueue.append(data);
 }

@@ -1,9 +1,9 @@
-#ifndef MYCOM_H
-#define MYCOM_H
+#ifndef COMMSOBJ_H
+#define COMMSOBJ_H
 
 #include <string>
 #include <ndds/ndds_cpp.h>
-#include <mylistener.h>
+#include <commslistener.h>
 #include <QString>
 #include <QObject>
 
@@ -11,17 +11,15 @@ using namespace std;
 
 #define MAX_STRING_SIZE         1024
 
-class MyCom : public QObject
+class CommsObj : public QObject
 {
+    Q_OBJECT
+
 public:
-    MyCom();
-    ~MyCom();
+    CommsObj(QObject *parent);
+    ~CommsObj();
 
-    int setupInstance();
-
-    void on_data_available(DDSDataReader *reader);
-
-    QString                 rxQueue;
+    int setupCommsObj(CommsListener *listener);
 
     DDSDomainParticipant *  participant;
     DDSTopic *              topic;
@@ -29,9 +27,12 @@ public:
     DDSDataReader *         data_reader;
     DDSStringDataWriter *   string_writer;
     DDS_ReturnCode_t        retcode;
-    MyListener              * listener;
+    CommsListener *         listener;
     char                    sample[MAX_STRING_SIZE];
     int                     main_result;
+
+public slots:
+    void sendData(QString data);
 };
 
-#endif // MYCOM_H
+#endif // COMMSOBJ_H

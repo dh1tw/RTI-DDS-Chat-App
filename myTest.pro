@@ -3,9 +3,9 @@ TEMPLATE = app
 QT += qml quick widgets
 
 SOURCES += main.cpp \
-    mycom.cpp \
-    mylistener.cpp \
-    mything.cpp
+    commshandler.cpp \
+    commsobj.cpp \
+    commslistener.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,8 +37,10 @@ INCLUDEPATH += $$PWD/../rti/ndds.5.1.0/include/ndds
 DEPENDPATH += $$PWD/../rti/ndds.5.1.0/include/ndds
 
 HEADERS += \
-    mycom.h \
-    mylistener.h \
-    mything.h
+    commshandler.h \
+    commsobj.h \
+    commslistener.h
+
+DISTFILES +=
 
 
