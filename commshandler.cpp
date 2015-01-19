@@ -14,16 +14,14 @@ CommsHandler::~CommsHandler()
 
 int CommsHandler::setupCommsHandler()
 {
-    CommsObj *commsObj = new CommsObj(this);
-    CommsListener *listener = new CommsListener(this);
+    listener = new CommsListener(this);
+    commsObj = new CommsObj(this, listener);
 
-    int success = commsObj->setupCommsObj(listener);
-    if (success != 0)
-    {
-        qDebug() << "Couldn't setup DDS Objects";
-        return 1;
-    }
-    connect(listener, SIGNAL(newData(QString)), this, SLOT(readListenerData(QString)));
+    connect(listener, SIGNAL(newData(QString)), this, SLOT(readListenerData(QString)), Qt::QueuedConnection);
+}
+
+QString CommsHandler::readData(){
+    return rcvBuffer;
 }
 
 void CommsHandler::writeData(QString data){
@@ -32,5 +30,6 @@ void CommsHandler::writeData(QString data){
 
 void CommsHandler::readListenerData(QString data){
     qDebug() << this << "recieved: " << data;
+    rcvBuffer = data;
     emit newRcvdDataAvailable(data);
 }

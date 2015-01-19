@@ -16,10 +16,8 @@ class CommsObj : public QObject
     Q_OBJECT
 
 public:
-    CommsObj(QObject *parent);
+    CommsObj(QObject *parent, CommsListener *listener);
     ~CommsObj();
-
-    int setupCommsObj(CommsListener *listener);
 
     DDSDomainParticipant *  participant;
     DDSTopic *              topic;
@@ -33,6 +31,10 @@ public:
 
 public slots:
     void sendData(QString data);
+
+private:
+    int setupCommsObj();
 };
+
 
 #endif // COMMSOBJ_H

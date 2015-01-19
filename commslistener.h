@@ -13,13 +13,13 @@ class CommsListener : public QObject, public DDSDataReaderListener
 
 public:
     CommsListener(QObject *parent);
-
-    void on_data_available(DDSDataReader *reader);
-    QString rxQueue;
+    ~CommsListener();
 
 signals:
     void newData(QString data);
 
+private:
+    void on_data_available(DDSDataReader *reader);
 };
 
 #endif // COMMSLISTENER_H

@@ -6,7 +6,11 @@
 DDS_Boolean shutdown_flag = DDS_BOOLEAN_FALSE;
 
 CommsListener::CommsListener(QObject *parent) : QObject(parent){
-    qDebug() << "Listener build";
+
+}
+
+CommsListener::~CommsListener(){
+
 }
 
 
@@ -47,7 +51,6 @@ void CommsListener::on_data_available(DDSDataReader *reader) {
             if(strlen(sample) == 0){
                 shutdown_flag = DDS_BOOLEAN_TRUE;
             }
-
         }
     }
 }

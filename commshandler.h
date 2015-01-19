@@ -13,17 +13,13 @@ class CommsHandler : public QObject
 
     Q_OBJECT
 
-    Q_PROPERTY(QString dataAccess WRITE writeData NOTIFY newRcvdDataAvailable)
+    Q_PROPERTY(QString dataAccess WRITE writeData READ readData NOTIFY newRcvdDataAvailable)
 
 public:
     CommsHandler();
     ~CommsHandler();
 
-    int setupCommsHandler();
-    QString readDDS();
-
-    CommsObj *commsObj;
-    CommsListener *listener;
+    QString readData();
 
 public slots:
     void writeData(QString data);
@@ -32,6 +28,13 @@ public slots:
 signals:
     void newRcvdDataAvailable(QString data);
     void newSendDataAvailable(QString data);
+
+private:
+    CommsObj           * commsObj;
+    CommsListener      * listener;
+    int                  setupCommsHandler();
+    QString              RcvBuffer;
+
 };
 
 

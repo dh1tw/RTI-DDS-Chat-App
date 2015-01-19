@@ -2,15 +2,20 @@
 #include <QDebug>
 
 
-CommsObj::CommsObj(QObject *parent) : QObject(parent)
+CommsObj::CommsObj(QObject *parent, CommsListener *mylistener) : QObject(parent)
 {
     DDSDomainParticipant *  participant = NULL;
     DDSTopic *              topic = NULL;
     DDSDataWriter *         data_writer = NULL;
     DDSDataReader *         data_reader = NULL;
     DDSStringDataWriter *   string_writer = NULL;
-    char                    sample[MAX_STRING_SIZE];
-    int                     main_result = 1; /* error by default */
+    listener = mylistener;
+
+    int success = setupCommsObj();
+    if (success != 0)
+    {
+        qDebug() << "Couldn't setup DDS Objects";
+    }
 }
 
 CommsObj::~CommsObj()
@@ -28,11 +33,9 @@ CommsObj::~CommsObj()
     }
 }
 
-int CommsObj::setupCommsObj(CommsListener *myListener){
-
-    listener = myListener;
-
-    CommsObj::participant = DDSDomainParticipantFactory::get_instance()->
+int CommsObj::setupCommsObj()
+{
+    participant = DDSDomainParticipantFactory::get_instance()->
             create_participant(
                 0,                              /* Domain ID */
                 DDS_PARTICIPANT_QOS_DEFAULT,    /* QoS */
@@ -44,7 +47,7 @@ int CommsObj::setupCommsObj(CommsListener *myListener){
     }
 
     /* Create the topic "Hello, World" for the String type */
-    CommsObj::topic = participant->create_topic(
+    topic = participant->create_topic(
                 "Hello, World",                          /* Topic name*/
                 DDSStringTypeSupport::get_type_name(), /* Type name */
                 DDS_TOPIC_QOS_DEFAULT,                 /* Topic QoS */
@@ -56,7 +59,7 @@ int CommsObj::setupCommsObj(CommsListener *myListener){
     }
 
     /* Create the data writer using the default publisher */
-    CommsObj::data_writer = participant->create_datawriter(
+    data_writer = participant->create_datawriter(
                 topic,
                 DDS_DATAWRITER_QOS_DEFAULT,     /* QoS */
                 NULL,                           /* Listener */
@@ -66,7 +69,7 @@ int CommsObj::setupCommsObj(CommsListener *myListener){
         return 1;
     }
 
-    CommsObj::data_reader = participant->create_datareader(
+    data_reader = participant->create_datareader(
                 topic,
                 DDS_DATAREADER_QOS_DEFAULT,    /* QoS */
                 listener,                      /* Listener */
@@ -76,7 +79,7 @@ int CommsObj::setupCommsObj(CommsListener *myListener){
         return 1;
     }
 
-    CommsObj::string_writer = DDSStringDataWriter::narrow(data_writer);
+    string_writer = DDSStringDataWriter::narrow(data_writer);
     if (string_writer == NULL) {
         /* In this specific case, this will never fail */
         qDebug() << "DDS_StringDataWriter_narrow failed.";
